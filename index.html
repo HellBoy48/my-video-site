@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Смотреть видео</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: black;
+      overflow: hidden;
+    }
+
+    #video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      display: none;
+      pointer-events: none; /* чтобы нельзя было нажимать паузу */
+    }
+
+    #start-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 25px 50px;
+      font-size: 28px;
+      background: linear-gradient(45deg, #00c6ff, #0072ff);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 2;
+    }
+
+    #start-btn:hover {
+      transform: translate(-50%, -50%) scale(1.05);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <button id="start-btn">Перейти на видео</button>
+
+  <video id="video" autoplay playsinline>
+    <source src="video.mp4" type="video/mp4">
+    Ваш браузер не поддерживает видео.
+  </video>
+
+  <script>
+    const button = document.getElementById('start-btn');
+    const video = document.getElementById('video');
+
+    async function playVideoFullscreen() {
+      // Скрываем кнопку
+      button.style.display = 'none';
+
+      // Показываем видео
+      video.style.display = 'block';
+
+      // Включаем звук
+      video.muted = false;
+
+      // Удаляем интерфейс управления (на всякий случай)
+      video.removeAttribute('controls');
+
+      // Переход в полноэкранный режим
+      const docEl = document.documentElement;
+      if (docEl.requestFullscreen) {
+        await docEl.requestFullscreen();
+      } else if (docEl.webkitRequestFullscreen) {
+        await docEl.webkitRequestFullscreen();
+      } else if (docEl.msRequestFullscreen) {
+        await docEl.msRequestFullscreen();
+      }
+
+      // Запускаем видео
+      try {
+        await video.play();
+      } catch (err) {
+        console.error('Ошибка запуска видео:', err);
+      }
+    }
+
+    button.addEventListener('click', playVideoFullscreen);
+
+    // Блокировка остановки
+    video.addEventListener('pause', () => {
+      video.play();
+    });
+  </script>
+</body>
+</html>
